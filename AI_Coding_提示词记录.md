@@ -59,6 +59,27 @@
   - 质量验证：`npm run build` 通过（ECharts 按需引入后包体积 1.17MB → 618KB）；13 项日期逻辑测试 + 7 项存储/统计测试全部通过；dev 服务器与全部模块编译验证通过
 - **产出物**：`focusly/` 完整 Vue3 前端工程源码（可 `npm install && npm run dev` 运行）
 
+### Prompt 4：用 Apifox CLI 创建并连接项目
+
+- **时间**：2026-08-22
+- **提示词原文**：
+
+> 你是不是没有连接到我的apifox，按照Focusly番茄时钟-专注学习API接口与数据模型.docx的教学，你用apifox cli创建并连接好
+
+- **目的**：在 Apifox 中按 docx 教学创建「番茄时钟 API」项目，配置数据模型、RESTful 接口与 Mock，并让前端对接真实 Mock API。
+- **执行结果**：
+  - 创建项目「番茄时钟 API」（ID 8745883，团队 4697138），`project settings` 设基础路径 `/api`
+  - 更新 `.apifox/settings.json` 写入 projectId 8745883
+  - 创建 4 个接口目录：计时器 / 学习任务 / 学习打卡 / 数据统计
+  - 创建 11 个数据模型：4 个基础模型（TimerConfig/Task/ClockRecord/StatisticItem）+ 7 个响应模型（TimerConfigResponse 等，data 通过 `$ref` 引用基础模型）
+  - 创建 10 个接口（RESTful，含请求体/Query 参数/响应模型/成功示例），全部 `cli-schema validate` 通过后写入
+  - 因 CLI 写入受限，经用户确认创建 AI 分支 `ai/20260822-from-main-focusly` 并在其上创建全部资源，用户开启「外部 AI 编辑权限」后 `branch merge` 合并回 main（10 接口 + 11 模型 + 5 目录）
+  - 创建 Mock 环境（base-url 云端 Mock 根地址）；创建 10 个 Mock 期望
+  - 排障记录：云端 Mock 默认关闭（CLI 无法开启，需客户端手动开启）；Mock `bodyData` 需为 JSON 字符串否则报 500001；云端 Mock 路径不含 `/api` 基础路径
+  - 更新 `focusly/.env` 为真实云端 Mock 地址（项目 ID 8745883）
+  - 验证：10 个接口经 `curl` 访问云端 Mock 全部返回 `code=200` + `msg` + `data`（列表为数组、对象为对象），统计接口返回 7/30 条连续日期
+- **产出物**：Apifox「番茄时钟 API」项目（含接口/模型/Mock/环境），前端 `.env` 已对接真实 Mock
+
 ---
 
 ## 待续
