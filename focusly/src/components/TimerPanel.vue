@@ -69,12 +69,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useTimer } from '../composables/useTimer'
 
 const emit = defineEmits(['changed'])
 
-const timer = useTimer()
+const timer = reactive(useTimer())
 const studyInput = ref(25)
 const restInput = ref(5)
 const configMsg = ref('')

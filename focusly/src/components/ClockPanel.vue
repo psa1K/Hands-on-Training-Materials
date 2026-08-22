@@ -2,9 +2,9 @@
   <section class="panel clock-panel">
     <h2 class="panel-title">✅ 每日学习打卡</h2>
 
-    <div class="clock-status" :class="{ done: clock.isClockedToday.value }">
+    <div class="clock-status" :class="{ done: clock.isClockedToday }">
       <div class="clock-big">
-        {{ clock.isClockedToday.value ? '今日已打卡' : '今日未打卡' }}
+        {{ clock.isClockedToday ? '今日已打卡' : '今日未打卡' }}
       </div>
       <div class="clock-today-min">
         今日专注 <strong>{{ clock.todayStudyMinutes }}</strong> 分钟
@@ -14,12 +14,13 @@
 
     <button
       class="btn primary clock-btn"
-      :disabled="clock.isClockedToday.value"
+      :disabled="clock.isClockedToday"
       @click="doClockIn"
     >
-      {{ clock.isClockedToday.value ? '明天再来吧 🎉' : '今日打卡' }}
+      {{ clock.isClockedToday ? '明天再来吧 🎉' : '今日打卡' }}
     </button>
     <p class="tip">{{ msg }}</p>
+    <p v-if="clock.loading" class="tip">打卡记录加载中…</p>
 
     <!-- 月度日历 -->
     <div class="calendar">
@@ -47,13 +48,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useClock } from '../composables/useClock'
 import { formatDate, addDays } from '../utils/date'
 
 const emit = defineEmits(['clocked'])
 
-const clock = useClock()
+const clock = reactive(useClock())
 const msg = ref('')
 const todayStr = formatDate()
 

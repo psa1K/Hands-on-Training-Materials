@@ -22,11 +22,11 @@
     </form>
 
     <p v-if="msg" class="tip">{{ msg }}</p>
-    <p v-if="task.loading.value" class="tip">加载中…</p>
+    <p v-if="task.loading" class="tip">加载中…</p>
 
     <!-- 任务列表 -->
-    <ul v-if="task.tasks.value.length" class="task-list">
-      <li v-for="t in task.tasks.value" :key="t.id" class="task-item" :class="{ done: t.status === '1' }">
+    <ul v-if="task.tasks.length" class="task-list">
+      <li v-for="t in task.tasks" :key="t.id" class="task-item" :class="{ done: t.status === '1' }">
         <label class="task-check" :title="t.status === '1' ? '标记未完成' : '标记完成'">
           <input type="checkbox" :checked="t.status === '1'" @change="onToggle(t)" />
           <span class="checkmark"></span>
@@ -53,21 +53,21 @@
       </li>
     </ul>
 
-    <p v-else-if="!task.loading.value" class="empty">暂无任务，添加一个开始专注吧 ✨</p>
+    <p v-else-if="!task.loading" class="empty">暂无任务，添加一个开始专注吧 ✨</p>
 
     <!-- 清空 -->
-    <div v-if="task.tasks.value.length" class="task-toolbar">
-      <span class="count">共 {{ task.tasks.value.length }} 项</span>
+    <div v-if="task.tasks.length" class="task-toolbar">
+      <span class="count">共 {{ task.tasks.length }} 项</span>
       <button class="btn outline small" @click="onClear">一键清空</button>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useTask } from '../composables/useTask'
 
-const task = useTask()
+const task = reactive(useTask())
 
 const newContent = ref('')
 const newDesc = ref('')

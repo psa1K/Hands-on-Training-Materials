@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <p v-if="stat.loading.value" class="tip">统计数据加载中…</p>
+    <p v-if="stat.loading" class="tip">统计数据加载中…</p>
 
     <!-- 近 7 天柱状图 -->
     <div class="chart-block">
@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 import * as echarts from 'echarts/core'
 import { BarChart, LineChart } from 'echarts/charts'
 import {
@@ -52,7 +52,7 @@ const props = defineProps({
   refreshTick: { type: Number, default: 0 }
 })
 
-const stat = useStat()
+const stat = reactive(useStat())
 const weekEl = ref(null)
 const monthEl = ref(null)
 let weekChart = null
@@ -87,8 +87,8 @@ function baseOption() {
 }
 
 function renderWeek() {
-  const dates = stat.weekStat.value.map((s) => s.date.slice(5))
-  const values = stat.weekStat.value.map((s) => s.studyTime)
+  const dates = stat.weekStat.map((s) => s.date.slice(5))
+  const values = stat.weekStat.map((s) => s.studyTime)
   weekChart.setOption({
     ...baseOption(),
     xAxis: { ...baseOption().xAxis, data: dates },
@@ -105,8 +105,8 @@ function renderWeek() {
 }
 
 function renderMonth() {
-  const dates = stat.monthStat.value.map((s) => s.date.slice(5))
-  const values = stat.monthStat.value.map((s) => s.studyTime)
+  const dates = stat.monthStat.map((s) => s.date.slice(5))
+  const values = stat.monthStat.map((s) => s.studyTime)
   monthChart.setOption({
     ...baseOption(),
     xAxis: { ...baseOption().xAxis, data: dates },
@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
 })
 
 watch(() => props.refreshTick, () => stat.loadStats())
-watch(() => [stat.weekStat.value, stat.monthStat.value], renderCharts)
+watch(() => [stat.weekStat, stat.monthStat], renderCharts)
 </script>
 
 <style scoped>
