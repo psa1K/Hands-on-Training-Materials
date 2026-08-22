@@ -36,6 +36,8 @@ export function useTimer() {
   const remaining = ref(0) // 剩余毫秒
   const totalMs = computed(() => (mode.value === 'study' ? studyDuration.value : restDuration.value) * 60 * 1000)
   const todayStudyMs = ref(readTodayStudy())
+  const loading = ref(false) // 配置加载状态
+  const sessionTick = ref(0) // 每个专注/休息轮次完成 +1，供图表自动刷新
 
   let timerId = null
   let lastStamp = 0
@@ -80,6 +82,7 @@ export function useTimer() {
       mode.value = 'study'
     }
     remaining.value = totalMs.value
+    sessionTick.value++ // 通知外部（图表等）自动刷新
   }
 
   function start() {
@@ -128,10 +131,15 @@ export function useTimer() {
   }
 
   async function loadConfig() {
-    const cfg = await fetchTimerConfig()
-    studyDuration.value = Number(cfg.studyDuration) || 25
-    restDuration.value = Number(cfg.restDuration) || 5
-    remaining.value = totalMs.value
+    loading.value = true
+    try {
+      const cfg = await fetchTimerConfig()
+      studyDuration.value = Number(cfg.studyDuration) || 25
+      restDuration.value = Number(cfg.restDuration) || 5
+      remaining.value = totalMs.value
+    } finally {
+      loading.value = false
+    }
   }
 
   onBeforeUnmount(clearTimer)
@@ -144,6 +152,8 @@ export function useTimer() {
     remaining,
     display,
     progress,
+    loading,
+    sessionTick,
     todayStudyMs: computed(() => Math.round(todayStudyMs.value / 60000)),
     start,
     pause,

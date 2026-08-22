@@ -5,8 +5,23 @@
  */
 
 import request from './request'
-import { getStorage, STORAGE_KEYS } from '../utils/storage'
+import { getStorage, STORAGE_KEYS, MEMORY_KEYS } from '../utils/storage'
 import { recentDays, formatDate } from '../utils/date'
+
+/** 今日实时专注时长（分钟）：计时器实时累计，用于让统计在番茄完成后即时更新 */
+function todayLiveStudy() {
+  const map = getStorage(MEMORY_KEYS.TODAY_STUDY, {})
+  return Math.round((Number(map[formatDate()]) || 0) / 60000)
+}
+
+/** 将今日实时专注时长合并进统计：当日有真实专注则覆盖（本地为准） */
+function mergeTodayLive(list) {
+  const t = todayLiveStudy()
+  if (t <= 0) return list
+  return list.map((item) =>
+    item.date === formatDate() ? { ...item, studyTime: t } : item
+  )
+}
 
 /** 由本地打卡记录聚合出统计数组（date 从旧到新，无记录补 0） */
 function aggregateFromLocal(days) {
@@ -33,9 +48,9 @@ export async function fetchWeekStat() {
   const days = recentDays(7)
   try {
     const data = await request.get('/stat/week')
-    return validateStat(data, days)
+    return mergeTodayLive(validateStat(data, days))
   } catch (e) {
-    return aggregateFromLocal(days)
+    return mergeTodayLive(aggregateFromLocal(days))
   }
 }
 
@@ -44,9 +59,9 @@ export async function fetchMonthStat() {
   const days = recentDays(30)
   try {
     const data = await request.get('/stat/month')
-    return validateStat(data, days)
+    return mergeTodayLive(validateStat(data, days))
   } catch (e) {
-    return aggregateFromLocal(days)
+    return mergeTodayLive(aggregateFromLocal(days))
   }
 }
 

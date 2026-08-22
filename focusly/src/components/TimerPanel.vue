@@ -62,14 +62,14 @@
           <input v-model.number="restInput" type="number" min="1" max="60" />
         </label>
       </div>
-      <button class="btn outline" @click="saveConfig">保存配置</button>
+      <button class="btn outline" @click="saveConfig" :disabled="timer.loading">{{ timer.loading ? '加载中…' : '保存配置' }}</button>
       <p class="config-msg">{{ configMsg }}</p>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted } from 'vue'
+import { ref, computed, reactive, watch, onMounted } from 'vue'
 import { useTimer } from '../composables/useTimer'
 
 const emit = defineEmits(['changed'])
@@ -85,6 +85,9 @@ const ringStyle = computed(() => ({
   strokeDasharray: CIRC,
   strokeDashoffset: CIRC * (1 - timer.progress)
 }))
+
+// 每个专注/休息轮次完成后，自动刷新统计看板
+watch(() => timer.sessionTick, () => emit('changed'))
 
 onMounted(async () => {
   await timer.loadConfig()
