@@ -12,7 +12,7 @@
 - **时间**：2026-08-22
 - **提示词原文**：
 
-> 我需要完成本周的ai coding 作业，我需要你fork一个仓库 https://github.com/sinkingwen/Hands-on-Training-Materials，并记录我对你的提示词储存在一个文件中，本地文件在~/projects下新建一个文件夹进行
+> 我需要完成本周的ai coding 作业，我需要你fork一个仓库 https://github.com/sinkingwen/Hands-on-Training-Materials ，并记录我对你的提示词储存在一个文件中，本地文件在~/projects下新建一个文件夹进行
 
 - **目的**：Fork 课程资料仓库，创建本地工作目录，并建立提示词记录文件。
 - **执行结果**：
@@ -64,7 +64,7 @@
 - **时间**：2026-08-22
 - **提示词原文**：
 
-> 你是不是没有连接到我的apifox，按照Focusly番茄时钟-专注学习API接口与数据模型.docx的教学，你用apifox cli创建并连接好
+> 按照Focusly番茄时钟-专注学习API接口与数据模型.docx的教学，用apifox cli创建并连接好
 
 - **目的**：在 Apifox 中按 docx 教学创建「番茄时钟 API」项目，配置数据模型、RESTful 接口与 Mock，并让前端对接真实 Mock API。
 - **执行结果**：
@@ -79,6 +79,25 @@
   - 更新 `focusly/.env` 为真实云端 Mock 地址（项目 ID 8745883）
   - 验证：10 个接口经 `curl` 访问云端 Mock 全部返回 `code=200` + `msg` + `data`（列表为数组、对象为对象），统计接口返回 7/30 条连续日期
 - **产出物**：Apifox「番茄时钟 API」项目（含接口/模型/Mock/环境），前端 `.env` 已对接真实 Mock
+
+### Prompt 5：修复网页端打卡"接口请求失败"问题
+
+- **时间**：2026-08-22
+- **提示词原文**：
+
+> 当我点击网页端打卡时，显示 打卡成功（本地模式）：接口请求失败，已切换本地数据，解决接口请求失败的问题
+
+- **目的**：定位并修复前端打卡请求失败、自动降级本地模式的问题。
+- **排障过程**：
+  - 用 curl 验证 CORS 预检（OPTIONS 204）与 POST /clock/add（200）均正常，排除 CORS 与接口本身问题
+  - 排查发现：运行的是 `vite preview`（服务 dist 构建产物），而 dist 是旧 .env（占位地址 `1234567-0-default/api`）时构建的，JS 中写死旧 URL → 所有请求失败降级本地
+  - Mock 为 serverless（x-fc-*），冷启动可能超 3s 超时
+- **修复**：
+  - `focusly/.env` 更新为真实云端 Mock 地址，超时由 3000ms 提升至 15000ms
+  - 重新 `npm run build`，确认 dist JS 含正确 baseURL、无旧占位残留
+  - 清理旧的 `vite preview` 进程并重启，验证服务返回正确构建产物
+  - 端到端验证：预检 204、打卡 POST 200、4 个初始 GET 全部 200
+- **产出物**：前端正常对接云端 Mock，打卡走真实接口
 
 ---
 
