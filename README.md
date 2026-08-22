@@ -4,6 +4,8 @@
 
 采用 **Mock API 模拟后端接口为核心数据源、LocalStorage 为离线兜底** 的工程化双层数据方案，无需真实后端即可体验标准前后端交互开发模式。
 
+> **本项目为前端实训专属项目，全程从零开发，结合 AI Coding 辅助完成编码、调试、优化。Apifox 用于模拟标准前后端接口交互，LocalStorage 负责浏览器侧持久化与离线兜底。**
+
 ## ✨ 功能特性
 
 ### 🍅 番茄专注计时（核心）
@@ -76,6 +78,9 @@ focusly/
 ## 🚀 快速开始
 
 ```bash
+# 进入项目目录
+cd focusly
+
 # 安装依赖
 npm install
 
@@ -93,12 +98,14 @@ npm run preview
 
 项目默认使用 LocalStorage（离线兜底模式），无需任何配置即可运行。
 
-如需体验标准 RESTful 交互，在 Apifox 中按文档创建好接口与 Mock 环境后，编辑项目根目录 `.env`：
+如需体验标准 RESTful 交互，在 Apifox 中按文档创建好接口与 Mock 环境后，编辑 `focusly/.env`（即 `VITE_API_BASE_URL` 所在文件）：
 
 ```env
-VITE_API_BASE_URL=https://你的Apifox-Mock地址/api
-VITE_API_TIMEOUT=3000
+VITE_API_BASE_URL=https://m1.apifoxmock.com/m1/{项目ID}-{分支ID}-default
+VITE_API_TIMEOUT=15000
 ```
+
+> 说明：Apifox 云端 Mock 直接服务接口相对路径（如 `/timer/config`），无需拼接 `/api` 基础路径；本项目的实际 Mock 地址已配置在 `focusly/.env`。
 
 修改后重启开发服务器。接口遵循统一返回格式 `{ code, msg, data }`，`code === 200` 视为成功；网络异常、超时、Mock 服务不可用时自动降级为 LocalStorage，保证功能可用。
 
@@ -124,9 +131,9 @@ VITE_API_TIMEOUT=3000
 
 ## 📄 文档
 
-- [《Focusly番茄时钟-专注学习打卡工具》需求说明书](../《Focusly番茄时钟-专注学习打卡工具》需求说明书.md)
-- [Focusly番茄时钟-专注学习API接口与数据模型.docx](../Focusly番茄时钟-专注学习API接口与数据模型.docx)
+- [《Focusly番茄时钟-专注学习打卡工具》需求说明书](./《Focusly番茄时钟-专注学习打卡工具》需求说明书.md)
+- [Focusly番茄时钟-专注学习API接口与数据模型.docx](./Focusly番茄时钟-专注学习API接口与数据模型.docx)
 
 ## 📝 说明
 
-本项目为前端实训 AI Coding 项目，使用 AI 辅助编程完成编码、调试与优化。Apifox 用于模拟标准前后端接口交互，LocalStorage 负责浏览器侧持久化与离线兜底。
+本项目为前端实训专属项目，全程从零开发，结合 AI Coding 辅助完成编码、调试、优化。Apifox 用于模拟标准前后端接口交互，LocalStorage 负责浏览器侧持久化与离线兜底。
